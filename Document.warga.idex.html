@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>G-MEY SYSTEM V20 - FULL EDIT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0b10;
+            --cyber-blue: #00f2ff;
+            --cyber-purple: #bc13fe;
+            --cyber-red: #ff0055;
+            --cyber-green: #2ecc71;
+            --cyber-yellow: #fefe33;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.15);
+        }
+        [data-theme="light"] {
+            --bg-deep: #f0f2f5;
+            --cyber-blue: #0078ff;
+            --glass: rgba(0, 0, 0, 0.05);
+            --border-glass: rgba(0, 0, 0, 0.1);
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-deep); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
+        [data-theme="light"] body { color: #222; }
+
+        .header-fixed { flex-shrink: 0; background: rgba(10, 11, 16, 0.95); backdrop-filter: blur(20px); z-index: 100; border-bottom: 2px solid var(--cyber-blue); }
+        .topbar { padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; }
+        .tab-menu { display: flex; gap: 5px; padding: 8px 10px; max-width: 650px; margin: 0 auto; }
+        .tab-btn { flex: 1; padding: 10px 5px; border: none; background: var(--glass); color: inherit; border-radius: 8px; font-weight: 900; font-size: 9px; cursor: pointer; border: 1px solid var(--border-glass); text-transform: uppercase; }
+        .tab-btn.active { background: var(--cyber-blue); color: #000; box-shadow: 0 0 10px var(--cyber-blue); }
+
+        .sidebar { position: fixed; top: 60px; left: -85px; width: 75px; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(20px); display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 25px 0; border-radius: 0 25px 25px 0; z-index: 200; border: 1px solid var(--border-glass); transition: 0.4s; }
+        .sidebar.active { left: 0; box-shadow: 10px 0 30px #000; }
+        .sidebar i { font-size: 22px; padding: 12px; border-radius: 12px; color: white; cursor: pointer; }
+
+        .content-area { flex-grow: 1; overflow-y: auto; padding: 15px; max-width: 650px; margin: 0 auto; width: 100%; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .admin-label { font-size: 11px; font-weight: 900; color: var(--cyber-blue); margin: 15px 0 8px; letter-spacing: 3px; text-transform: uppercase; text-align: center; }
+        .admin-folder-big { width: 100%; height: 220px; margin-bottom: 10px; background: #000; border: 1px solid var(--cyber-blue); border-radius: 15px; position: relative; overflow: hidden; }
+        .admin-folder-big img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .nama-rt-display { font-size: 20px; font-weight: 800; color: var(--cyber-yellow); text-align: center; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-edit-float { position: absolute; bottom: 10px; right: 10px; background: var(--cyber-yellow); color: #000; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 900; font-size: 10px; z-index: 5; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-top: 4px solid var(--cyber-blue); border-radius: 15px; padding: 15px; text-align: center; }
+        .stat-card p { font-size: 22px; font-weight: 900; color: var(--cyber-blue); margin: 5px 0; }
+
+        .sch-input { width: 100%; padding: 12px; margin-bottom: 15px; background: var(--glass); border: 1px solid var(--cyber-blue); color: inherit; border-radius: 10px; outline: none; }
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .folder { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 15px; padding: 12px; text-align: center; }
+        .folder img { width: 100%; height: 110px; object-fit: cover; border-radius: 10px; }
+        .divider { grid-column: 1 / -1; margin: 20px 0 10px; font-weight: 900; color: var(--cyber-blue); font-size: 10px; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; }
+        .divider::after { content: ""; flex: 1; height: 1px; background: var(--cyber-blue); opacity: 0.3; }
+        .card-bantuan { background: linear-gradient(145deg, rgba(46, 204, 113, 0.1), rgba(0, 0, 0, 0.4)); border: 1px solid var(--cyber-green); border-left: 5px solid var(--cyber-green); border-radius: 12px; padding: 15px; margin-bottom: 10px; position: relative; }
+
+        #viewer { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; z-index: 1000; overflow: hidden; touch-action: none; justify-content: center; align-items: center; }
+        #vImg { position: absolute; transition: transform 0.1s ease-out; max-width: 100%; max-height: 100%; }
+
+        #mdl { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); padding:20px; border-radius:15px; width:90%; max-width:350px; display:none; z-index:400; background: #0f0f1a; border: 2px solid var(--cyber-blue); }
+        #mdl input, #mdl textarea { width:100%; padding:12px; margin-bottom:12px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px; outline: none; }
+        
+        .btn-group-card { display: flex; gap: 5px; justify-content: center; margin-top: 8px; }
+        .btn-mini { padding: 4px 8px; border-radius: 5px; font-size: 9px; font-weight: 900; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="header-fixed">
+    <div class="topbar">
+        <i class="bi bi-grid-fill" id="btnToggle" style="background:var(--cyber-red); padding:8px; border-radius:8px; cursor:pointer; color:white;"></i>
+        <span style="font-weight:900; color:var(--cyber-blue); font-size: 14px;">G-MEY <span style="color:#fff">SYSTEM</span></span>
+        <i class="bi bi-moon-stars-fill" onclick="toggleDark()" style="color:var(--cyber-yellow); cursor:pointer;"></i>
+    </div>
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="openTab('tab1')">Statistik</button>
+        <button class="tab-btn" onclick="openTab('tab2')">Data Warga</button>
+        <button class="tab-btn" onclick="openTab('tab3')">Bantuan</button>
+    </div>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <i class="bi bi-person-plus-fill" style="background:var(--cyber-blue);" onclick="openMdl('tetap', 'TAMBAH ASLI')"></i>
+    <i class="bi bi-person-vcard-fill" style="background:var(--cyber-purple);" onclick="openMdl('domisili', 'TAMBAH DOM')"></i>
+    <i class="bi bi-gift-fill" style="background:var(--cyber-green);" onclick="openMdl('bantuan', 'DATA BANTUAN')"></i>
+</div>
+
+<div class="content-area">
+    <div id="tab1" class="tab-content active">
+        <div class="admin-label">KETUA RT</div>
+        <div class="admin-folder-big">
+            <img src="" id="imgRT" onclick="openView(this.src)">
+            <button class="btn-edit-float" onclick="editDataByTipe('rt')">EDIT</button>
+        </div>
+        <div id="dispNamaRT" class="nama-rt-display">NAMA KETUA RT</div>
+
+        <div class="admin-label">STRUKTUR ORGANISASI</div>
+        <div class="admin-folder-big">
+            <img src="" id="imgStruktur" onclick="openView(this.src)">
+            <button class="btn-edit-float" onclick="editDataByTipe('struktur')">EDIT</button>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-card"><h4>ASLI</h4><p id="stKKA">0</p>KK</div>
+            <div class="stat-card"><h4>JIWA</h4><p id="stJA">0</p>ORG</div>
+            <div class="stat-card" style="border-top-color:var(--cyber-purple)"><h4>DOM</h4><p id="stKKD" style="color:var(--cyber-purple)">0</p>KK</div>
+            <div class="stat-card" style="border-top-color:var(--cyber-purple)"><h4>JIWA</h4><p id="stJD" style="color:var(--cyber-purple)">0</p>ORG</div>
+        </div>
+    </div>
+
+    <div id="tab2" class="tab-content">
+        <input type="text" id="schWarga" class="sch-input" placeholder="Cari nama warga...">
+        <div id="containerWarga" class="data-grid"></div>
+    </div>
+    
+    <div id="tab3" class="tab-content">
+        <input type="text" id="schBantuan" class="sch-input" placeholder="Cari penerima bantuan...">
+        <div id="containerBantuan"></div>
+    </div>
+</div>
+
+<div id="viewer" onclick="closeView()">
+    <img id="vImg" src="">
+</div>
+
+<div id="bg-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; z-index:300;" onclick="closeMdl()"></div>
+<div id="mdl">
+    <h3 id="mdlTitle" style="text-align:center; color:var(--cyber-blue); font-size:16px;">INPUT</h3>
+    <input type="hidden" id="editId">
+    <div id="boxNama"><input type="text" id="inNama" placeholder="Nama Lengkap"></div>
+    <div id="boxJiwa"><input type="number" id="inJml" placeholder="Jumlah Jiwa"></div>
+    <div id="boxBantuan" style="display:none"><textarea id="inKet" placeholder="Keterangan Bantuan"></textarea></div>
+    <div id="boxFoto"><input type="file" id="inFoto" accept="image/*"></div>
+    <button id="btnSimpan" style="width:100%; padding:15px; background:var(--cyber-blue); color:#000; border:none; border-radius:10px; font-weight:900;">SIMPAN DATA</button>
+</div>
+
+<script>
+    let db, currentTipe = 'tetap', tempImg = "";
+    
+    const req = indexedDB.open("GmeyDB_V20", 1);
+    req.onupgradeneeded = e => { e.target.result.createObjectStore("warga", {keyPath: "id", autoIncrement: true}); };
+    req.onsuccess = e => { db = e.target.result; load(); };
+
+    function load() { db.transaction("warga", "readonly").objectStore("warga").getAll().onsuccess = e => updateUI(e.target.result || []); }
+
+    function updateUI(data) {
+        const rt = data.find(x => x.tipe === 'rt'), str = data.find(x => x.tipe === 'struktur');
+        if(rt) { document.getElementById('imgRT').src = rt.foto; document.getElementById('dispNamaRT').innerText = rt.nama || "BELUM ADA NAMA"; }
+        if(str) document.getElementById('imgStruktur').src = str.foto;
+
+        document.getElementById('stKKA').innerText = data.filter(x=>x.tipe==='tetap').length;
+        document.getElementById('stJA').innerText = data.filter(x=>x.tipe==='tetap').reduce((s,x)=>s+(parseInt(x.jml)||0),0);
+        document.getElementById('stKKD').innerText = data.filter(x=>x.tipe==='domisili').length;
+        document.getElementById('stJD').innerText = data.filter(x=>x.tipe==='domisili').reduce((s,x)=>s+(parseInt(x.jml)||0),0);
+
+        renderWarga(data); renderBantuan(data);
+    }
+
+    function renderWarga(data) {
+        const conW = document.getElementById('containerWarga'); conW.innerHTML = '';
+        const f = (t) => data.filter(x=>x.tipe===t).sort((a,b)=>a.nama.localeCompare(b.nama));
+        const asli = f('tetap'), dom = f('domisili');
+        if(asli.length){ conW.innerHTML += `<div class="divider">WARGA ASLI</div>`; asli.forEach(i => conW.innerHTML += createCard(i, 'var(--cyber-blue)')); }
+        if(dom.length){ conW.innerHTML += `<div class="divider" style="color:var(--cyber-purple)">WARGA DOMISILI</div>`; dom.forEach(i => conW.innerHTML += createCard(i, 'var(--cyber-purple)')); }
+    }
+
+    function renderBantuan(data) {
+        const conB = document.getElementById('containerBantuan'); conB.innerHTML = '';
+        data.filter(x=>x.tipe==='bantuan').sort((a,b)=>a.nama.localeCompare(b.nama)).forEach(i => {
+            conB.innerHTML += `<div class="card-bantuan">
+                <div style="color:var(--cyber-green); font-weight:900; text-transform:uppercase;">${i.nama}</div>
+                <div style="font-size:11px;">Bantuan: ${i.ket}</div>
+                <div class="btn-group-card" style="justify-content: flex-start;">
+                    <button class="btn-mini" onclick="prepEdit(${i.id})" style="background:var(--cyber-yellow); color:#000;">EDIT</button>
+                    <button class="btn-mini" onclick="hapus(${i.id})" style="background:var(--cyber-red); color:#fff;">HAPUS</button>
+                </div>
+            </div>`;
+        });
+    }
+
+    function createCard(i, col) {
+        return `<div class="folder" style="border-top: 3px solid ${col}">
+            <img src="${i.foto}" onclick="openView(this.src)">
+            <div style="font-weight:900; margin-top:8px; font-size:11px; text-transform:uppercase; color:${col}">${i.nama}</div>
+            <div style="font-size:10px; opacity:0.7;">${i.jml} Jiwa</div>
+            <div class="btn-group-card">
+                <button class="btn-mini" onclick="prepEdit(${i.id})" style="background:var(--cyber-yellow); color:#000;">EDIT</button>
+                <button class="btn-mini" onclick="hapus(${i.id})" style="background:var(--cyber-red); color:#fff;">HAPUS</button>
+            </div>
+        </div>`;
+    }
+
+    // EDIT LOGIC
+    function prepEdit(id) {
+        db.transaction("warga").objectStore("warga").get(id).onsuccess = e => {
+            const d = e.target.result;
+            openMdl(d.tipe, 'EDIT DATA');
+            document.getElementById('editId').value = d.id;
+            document.getElementById('inNama').value = d.nama;
+            document.getElementById('inJml').value = d.jml || "";
+            document.getElementById('inKet').value = d.ket || "";
+            tempImg = d.foto;
+        };
+    }
+
+    function editDataByTipe(tipe) {
+        db.transaction("warga").objectStore("warga").getAll().onsuccess = e => {
+            const d = e.target.result.find(x => x.tipe === tipe);
+            if(d) prepEdit(d.id); else openMdl(tipe, 'UPDATE ' + tipe.toUpperCase());
+        };
+    }
+
+    // ZOOM & VIEWER
+    let scale = 1, pX = 0, pY = 0, sX = 0, sY = 0, isD = false, initD = 0;
+    const vImg = document.getElementById('vImg'), viewer = document.getElementById('viewer');
+    function openView(s) { if(!s || s.length < 50) return; vImg.src = s; scale = 1; pX = 0; pY = 0; vImg.style.transform = `translate(0,0) scale(1)`; viewer.style.display = 'flex'; }
+    function closeView() { viewer.style.display = 'none'; }
+    viewer.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) { isD = true; sX = e.touches[0].clientX - pX; sY = e.touches[0].clientY - pY; }
+        else if (e.touches.length === 2) { initD = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }
+    });
+    viewer.addEventListener('touchmove', e => {
+        if (e.touches.length === 1 && isD) { pX = e.touches[0].clientX - sX; pY = e.touches[0].clientY - sY; }
+        else if (e.touches.length === 2) { 
+            let d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+            scale *= d / initD; initD = d;
+        }
+        vImg.style.transform = `translate(${pX}px, ${pY}px) scale(${scale})`;
+    });
+    viewer.addEventListener('touchend', () => isD = false);
+
+    // SAVE LOGIC
+    document.getElementById('btnSimpan').onclick = () => {
+        const id = document.getElementById('editId').value;
+        const n = document.getElementById('inNama').value, j = document.getElementById('inJml').value, k = document.getElementById('inKet').value, f = document.getElementById('inFoto').files[0];
+        
+        const save = (img) => {
+            const obj = { nama:n, tipe: currentTipe, foto: img || tempImg || "", jml: j||0, ket: k||"" };
+            if(id) obj.id = parseInt(id);
+            const tx = db.transaction("warga","readwrite");
+            const store = tx.objectStore("warga");
+            
+            if(!id && (currentTipe === 'rt' || currentTipe === 'struktur')) {
+                store.getAll().onsuccess = e => {
+                    e.target.result.filter(x => x.tipe === currentTipe).forEach(old => store.delete(old.id));
+                    store.put(obj);
+                };
+            } else { store.put(obj); }
+            
+            tx.oncomplete = () => { load(); closeMdl(); };
+        };
+
+        if(f) { const r = new FileReader(); r.onload = e => save(e.target.result); r.readAsDataURL(f); }
+        else { save(tempImg); }
+    };
+
+    function openMdl(tipe, tit) {
+        currentTipe = tipe; document.getElementById('mdlTitle').innerText = tit;
+        document.getElementById('editId').value = ""; tempImg = "";
+        document.getElementById('inNama').value = ""; document.getElementById('inJml').value = ""; document.getElementById('inKet').value = ""; document.getElementById('inFoto').value = "";
+        
+        document.getElementById('boxNama').style.display = (tipe === 'struktur') ? 'none' : 'block';
+        document.getElementById('boxJiwa').style.display = (tipe==='tetap'||tipe==='domisili') ? 'block' : 'none';
+        document.getElementById('boxBantuan').style.display = (tipe==='bantuan') ? 'block' : 'none';
+        document.getElementById('boxFoto').style.display = (tipe==='bantuan') ? 'none' : 'block';
+        document.getElementById('mdl').style.display = 'block'; document.getElementById('bg-modal').style.display = 'block';
+    }
+
+    function closeMdl() { document.getElementById('mdl').style.display='none'; document.getElementById('bg-modal').style.display='none'; }
+    function hapus(id) { if(confirm("Hapus permanen?")) db.transaction("warga","readwrite").objectStore("warga").delete(id).onsuccess = load; }
+    function openTab(id) { document.querySelectorAll('.tab-content, .tab-btn').forEach(x => x.classList.remove('active')); document.getElementById(id).classList.add('active'); event.currentTarget.classList.add('active'); }
+    function toggleDark() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    document.getElementById('btnToggle').onclick = () => document.getElementById('sidebar').classList.toggle('active');
+    
+    document.getElementById('schWarga').oninput = e => {
+        const v = e.target.value.toLowerCase();
+        document.querySelectorAll('#containerWarga .folder').forEach(f => f.style.display = f.innerText.toLowerCase().includes(v) ? '' : 'none');
+    };
+    document.getElementById('schBantuan').oninput = e => {
+        const v = e.target.value.toLowerCase();
+        document.querySelectorAll('#containerBantuan .card-bantuan').forEach(f => f.style.display = f.innerText.toLowerCase().includes(v) ? '' : 'none');
+    };
+</script>
+</body>
+</html>
